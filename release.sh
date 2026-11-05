@@ -4,7 +4,8 @@
 #   1) แก้ appVersionName ใน gradle.properties แล้ว commit + push
 #   2) ./release.sh "รายละเอียดการอัปเดต"
 #
-# เว็บทุกตัว (หน้าข้อมูลดิบมือถือ) ดึง release ล่าสุดจากที่นี่ที่เดียว และแอปที่ติดตั้งอยู่จะเห็นอัปเดตเอง
+# แอปที่ติดตั้งอยู่เช็ค release ล่าสุดที่นี่เอง (ไม่ต้องตั้ง Webhook URL) และเว็บทุกตัว (หน้าข้อมูลดิบมือถือ)
+# ก็ดึงปุ่มดาวน์โหลดจากที่นี่ที่เดียว
 # ต้องมี gh (gh auth login) และ keystore/keystore.properties
 set -euo pipefail
 cd "$(dirname "$0")"

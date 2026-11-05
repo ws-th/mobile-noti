@@ -18,9 +18,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.mm.notifyhook.NotifyHookApp
 import com.mm.notifyhook.ui.MainActivity
-import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
 
 /**
@@ -31,8 +29,7 @@ import java.util.concurrent.TimeUnit
 class UpdateCheckWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val settings = (applicationContext as NotifyHookApp).webhookSettings.settings.first()
-        val release = (AppUpdater.check(settings) as? UpdateCheck.Available)?.release ?: return Result.success()
+        val release = (AppUpdater.check() as? UpdateCheck.Available)?.release ?: return Result.success()
 
         val prefs = applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         if (prefs.getInt(KEY_NOTIFIED_CODE, 0) >= release.versionCode) return Result.success()

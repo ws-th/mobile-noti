@@ -28,6 +28,7 @@ android {
         targetSdk = 35
         versionCode = appVersionCode
         versionName = appVersionName
+        buildConfigField("String", "UPDATE_REPO", "\"${providers.gradleProperty("updateRepo").get()}\"")
     }
 
     signingConfigs {

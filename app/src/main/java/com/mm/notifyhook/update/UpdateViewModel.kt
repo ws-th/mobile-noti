@@ -3,11 +3,9 @@ package com.mm.notifyhook.update
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.mm.notifyhook.NotifyHookApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -24,8 +22,6 @@ sealed interface UpdateState {
 }
 
 class UpdateViewModel(app: Application) : AndroidViewModel(app) {
-
-    private val settingsRepo = (app as NotifyHookApp).webhookSettings
 
     private val _state = MutableStateFlow<UpdateState>(UpdateState.Idle)
     val state: StateFlow<UpdateState> = _state
@@ -44,8 +40,7 @@ class UpdateViewModel(app: Application) : AndroidViewModel(app) {
         if (_state.value is UpdateState.Checking || _state.value is UpdateState.Downloading) return
         _state.value = UpdateState.Checking
         viewModelScope.launch {
-            val settings = settingsRepo.settings.first()
-            val result = withContext(Dispatchers.IO) { AppUpdater.check(settings) }
+            val result = withContext(Dispatchers.IO) { AppUpdater.check() }
             _state.value = when (result) {
                 is UpdateCheck.Available -> UpdateState.Available(result.release).also { dialogOpen.value = true }
                 UpdateCheck.UpToDate -> UpdateState.UpToDate
@@ -64,10 +59,9 @@ class UpdateViewModel(app: Application) : AndroidViewModel(app) {
         dialogOpen.value = true
         _state.value = UpdateState.Downloading(release, 0f)
         viewModelScope.launch {
-            val settings = settingsRepo.settings.first()
             _state.value = try {
                 val file = withContext(Dispatchers.IO) {
-                    AppUpdater.download(getApplication(), settings, release) { p ->
+                    AppUpdater.download(getApplication(), release) { p ->
                         _state.value = UpdateState.Downloading(release, p)
                     }
                 }
