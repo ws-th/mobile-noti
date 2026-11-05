@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- สำหรับเฟสส่ง webhook ในอนาคต -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- ขอให้ระบบไม่หยุดแอปเพื่อประหยัดแบต (หน้า "ให้แอปทำงานตลอด") -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Android 11+: ต้องประกาศเพื่อให้เห็นรายชื่อแอปที่มี launcher icon -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".NotifyHookApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="NotifyHook"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".service.NotificationCaptureService"
+            android:exported="true"
+            android:label="NotifyHook"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

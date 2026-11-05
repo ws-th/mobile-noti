@@ -1,0 +1,157 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "e05a558e599b033fd1eb3bdd1519492f",
+    "entities": [
+      {
+        "tableName": "notifications",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `packageName` TEXT NOT NULL, `appName` TEXT NOT NULL, `title` TEXT, `text` TEXT, `subText` TEXT, `postedAt` INTEGER NOT NULL, `notificationKey` TEXT NOT NULL, `webhookStatus` TEXT NOT NULL, `deletedAt` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appName",
+            "columnName": "appName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "subText",
+            "columnName": "subText",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "postedAt",
+            "columnName": "postedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notificationKey",
+            "columnName": "notificationKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "webhookStatus",
+            "columnName": "webhookStatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deletedAt",
+            "columnName": "deletedAt",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_notifications_packageName",
+            "unique": false,
+            "columnNames": [
+              "packageName"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notifications_packageName` ON `${TABLE_NAME}` (`packageName`)"
+          },
+          {
+            "name": "index_notifications_postedAt",
+            "unique": false,
+            "columnNames": [
+              "postedAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notifications_postedAt` ON `${TABLE_NAME}` (`postedAt`)"
+          },
+          {
+            "name": "index_notifications_webhookStatus",
+            "unique": false,
+            "columnNames": [
+              "webhookStatus"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notifications_webhookStatus` ON `${TABLE_NAME}` (`webhookStatus`)"
+          },
+          {
+            "name": "index_notifications_deletedAt",
+            "unique": false,
+            "columnNames": [
+              "deletedAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notifications_deletedAt` ON `${TABLE_NAME}` (`deletedAt`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "app_filters",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`packageName` TEXT NOT NULL, `appName` TEXT NOT NULL, `enabled` INTEGER NOT NULL, PRIMARY KEY(`packageName`))",
+        "fields": [
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appName",
+            "columnName": "appName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "enabled",
+            "columnName": "enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "packageName"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e05a558e599b033fd1eb3bdd1519492f')"
+    ]
+  }
+}

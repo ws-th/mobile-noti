@@ -1,0 +1,14 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build/
+/app/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# กุญแจเซ็นแอปตัวจริง — ห้าม commit แต่ต้องสำรองไว้ (หายแล้วอัปเดตแอปทับไม่ได้)
+/keystore/
+/dist/
