@@ -1,9 +1,13 @@
 package com.mm.notifyhook.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -12,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.mm.notifyhook.R
+import com.mm.notifyhook.update.UpdateCheckWorker
+import com.mm.notifyhook.update.UpdateViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
@@ -40,6 +46,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -60,13 +67,24 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent { AppTheme { MainScreen() } }
+        UpdateCheckWorker.schedule(this)
+        val fromUpdateNotification = intent.getBooleanExtra(EXTRA_CHECK_UPDATE, false)
+        setContent { AppTheme { MainScreen(fromUpdateNotification = fromUpdateNotification) } }
+    }
+
+    companion object {
+        /** เปิดจากแจ้งเตือน "มีเวอร์ชันใหม่" — เช็คอัปเดตทันทีแม้เคยเช็คไปแล้วรอบนี้ */
+        const val EXTRA_CHECK_UPDATE = "check_update"
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MainScreen(vm: MainViewModel = viewModel()) {
+private fun MainScreen(
+    fromUpdateNotification: Boolean = false,
+    vm: MainViewModel = viewModel(),
+    updates: UpdateViewModel = viewModel(),
+) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var showTrash by rememberSaveable { mutableStateOf(false) }
     var confirmEmptyTrash by remember { mutableStateOf(false) }
@@ -75,6 +93,21 @@ private fun MainScreen(vm: MainViewModel = viewModel()) {
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val inTrash = tab == 0 && showTrash
+
+    // Android 13+ ต้องขออนุญาตก่อนถึงจะขึ้นแจ้งเตือน "มีเวอร์ชันใหม่" จากการเช็คเบื้องหลังได้
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
+    val context = LocalContext.current
+    var askedNotificationPermission by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (fromUpdateNotification) updates.check(manual = false) else updates.autoCheck()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !askedNotificationPermission &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            askedNotificationPermission = true
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+    UpdateDialog(updates)
 
     BackHandler(enabled = inTrash) { showTrash = false }
     LaunchedEffect(tab) { if (tab != 0) showTrash = false }

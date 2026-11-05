@@ -45,7 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mm.notifyhook.BuildConfig
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mm.notifyhook.data.WebhookStatus
 import com.mm.notifyhook.webhook.FriendlyReport
 import com.mm.notifyhook.webhook.WebhookClient
@@ -251,12 +251,7 @@ private fun WebhookForm(vm: MainViewModel, saved: WebhookSettings, modifier: Mod
                 modifier = Modifier.weight(1f),
             ) { Text("ส่งที่ล้มเหลวใหม่") }
         }
-        Text(
-            "NotifyHook เวอร์ชัน ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-        )
+        UpdateStatusRow(viewModel())
     }
 }
 
